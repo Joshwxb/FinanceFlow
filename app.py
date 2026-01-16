@@ -17,71 +17,63 @@ cookies = EncryptedCookieManager(password="financeflow_secure_key_2026")
 if not cookies.ready():
     st.stop()
 
-# --- 3. Professional Minimalist CSS (Mobile Contrast & Fixed Arrow) ---
+# --- 3. Professional Minimalist CSS (Maximum Mobile Fix) ---
 st.markdown("""
     <style>
-    /* Global Background & Force Dark Text for Mobile Visibility */
-    .stApp { 
-        background-color: #f8f9fc !important; 
-    }
+    /* Global Background */
+    .stApp { background-color: #f8f9fc !important; }
     
-    /* Force text colors to be dark and visible even if phone is in Dark Mode */
-    .stApp, .stMarkdown, p, h1, h2, h3, h4, label, span, div {
-        color: #1a1c23 !important;
-    }
-
-    /* Force Sidebar Toggle Arrow (>>) to be permanent on the LEFT */
-    [data-testid="collapsedControl"] {
+    /* FORCE THE SIDEBAR ARROW (>>) ON MOBILE */
+    /* This targets the specific button container for the sidebar toggle */
+    [data-testid="collapsedControl"], .st-emotion-cache-12fmjuu, .st-emotion-cache-6qob1r {
         display: flex !important;
         visibility: visible !important;
         z-index: 999999 !important;
-        opacity: 1 !important;
         position: fixed !important;
         left: 0 !important;
         top: 15px !important;
-        background-color: #2d3748 !important; /* Dark box so it's visible */
-        color: white !important; /* White arrow icon */
+        background-color: #2d3748 !important;
         border-radius: 0 8px 8px 0 !important;
-        padding: 5px 10px !important;
-        box-shadow: 2px 2px 10px rgba(0,0,0,0.2) !important;
+        width: 45px !important;
+        height: 45px !important;
+        justify-content: center !important;
+        align-items: center !important;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3) !important;
     }
 
-    /* Target the SVG arrow inside the toggle specifically */
-    [data-testid="collapsedControl"] svg {
+    /* Force the arrow icon inside to be white */
+    [data-testid="collapsedControl"] svg, .st-emotion-cache-12fmjuu svg {
         fill: white !important;
         color: white !important;
+        width: 25px !important;
+        height: 25px !important;
     }
 
-    /* Fix for Metrics visibility */
-    [data-testid="stMetricLabel"] > div { color: #4a5568 !important; }
-    [data-testid="stMetricValue"] > div { color: #1a202c !important; font-weight: 700 !important; }
+    /* BUTTONS: Force White Text for Logout and Access Dashboard */
+    .stButton>button {
+        background-color: #2d3748 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        border: none !important;
+    }
 
-    /* Pull the main content up */
-    .main .block-container { padding-top: 2rem !important; }
+    /* Force button text to stay white on hover/active */
+    .stButton>button:hover, .stButton>button:active, .stButton>button:focus {
+        color: white !important;
+        background-color: #1a202c !important;
+    }
 
-    /* Clean Auth UI */
-    .auth-container { max-width: 400px; margin: auto; margin-top: -10px; }
-    .brand-title { font-weight: 700; font-size: 32px; color: #1a202c !important; text-align: center; }
-    .brand-subtitle { font-size: 15px; color: #718096 !important; text-align: center; }
-
-    /* Forms and Tabs */
-    [data-testid="stForm"] { border: none !important; padding: 0 !important; }
-    .stTabs [data-baseweb="tab-list"] { gap: 20px; justify-content: center; border-bottom: none; }
-    
-    /* Button Styling */
-    .stButton>button { 
-        border-radius: 8px; 
-        font-weight: 600; 
-        height: 3em; 
-        border: none; 
-        background-color: #2d3748 !important; 
-        color: white !important; 
+    /* Fix for Metrics and Text Visibility */
+    .stApp, p, h1, h2, h3, label, span, div {
+        color: #1a1c23 !important;
     }
     
-    .stTextInput input { border-radius: 8px !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; color: black !important; }
+    [data-testid="stMetricValue"] > div { color: #1a202c !important; }
     
     header {visibility: hidden;}
     footer {visibility: hidden;}
+    .main .block-container { padding-top: 2rem !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -104,14 +96,13 @@ session = get_session()
 def auth_ui():
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
-        st.markdown('<div class="auth-container">', unsafe_allow_html=True)
-        st.markdown('<div class="brand-title">FinanceFlow</div>', unsafe_allow_html=True)
-        st.markdown('<div class="brand-subtitle">Smart personal finance tracking</div>', unsafe_allow_html=True)
+        st.markdown('<div style="max-width: 400px; margin: auto; text-align: center;">', unsafe_allow_html=True)
+        st.markdown('<h1 style="font-weight:700; color:#1a202c !important;">FinanceFlow</h1>', unsafe_allow_html=True)
+        st.markdown('<p style="color:#718096 !important; margin-bottom:20px;">Smart personal finance tracking</p>', unsafe_allow_html=True)
         
         tab_login, tab_signup = st.tabs(["Sign In", "Create Account"])
         
         with tab_login:
-            st.markdown("<br>", unsafe_allow_html=True)
             with st.form("login_form", border=False):
                 u_in = st.text_input("Username")
                 p_in = st.text_input("Password", type="password")
@@ -126,7 +117,6 @@ def auth_ui():
                     else: st.error("Invalid credentials.")
         
         with tab_signup:
-            st.markdown("<br>", unsafe_allow_html=True)
             with st.form("signup_form", border=False):
                 nu_in = st.text_input("New Username")
                 np_in = st.text_input("New Password", type="password")
@@ -147,9 +137,8 @@ def dashboard_ui():
     with st.sidebar:
         st.markdown("<h2 style='text-align: center; color: #1a1c23;'>FinanceFlow</h2>", unsafe_allow_html=True)
         
-        # ACCOUNT DROPDOWN (No icon in label)
         with st.expander(f"Account ({st.session_state['username']})", expanded=False):
-            if st.button("Log Out", use_container_width=True):
+            if st.button("Log Out", key="logout_btn", use_container_width=True):
                 if "user_id" in cookies:
                     del cookies["user_id"]
                     cookies.save()
@@ -158,7 +147,6 @@ def dashboard_ui():
         
         st.markdown("---")
         
-        # NEW RECORD FORM
         with st.form("add_tx", clear_on_submit=True):
             st.subheader("New Record")
             d = st.date_input("Date", datetime.date.today())
