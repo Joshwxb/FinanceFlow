@@ -17,54 +17,69 @@ cookies = EncryptedCookieManager(password="financeflow_secure_key_2026")
 if not cookies.ready():
     st.stop()
 
-# --- 3. Professional Minimalist CSS ---
+# --- 3. Professional Minimalist CSS (Mobile Contrast & Fixed Arrow) ---
 st.markdown("""
     <style>
-    /* Global Background */
-    .stApp { background-color: #f8f9fc; color: #1a1c23; }
+    /* Global Background & Force Dark Text for Mobile Visibility */
+    .stApp { 
+        background-color: #f8f9fc !important; 
+    }
     
-    /* Force Sidebar Toggle Arrow (>>) to be permanent */
-    section[data-testid="stSidebar"] + div { display: flex !important; }
+    /* Force text colors to be dark and visible even if phone is in Dark Mode */
+    .stApp, .stMarkdown, p, h1, h2, h3, h4, label, span, div {
+        color: #1a1c23 !important;
+    }
+
+    /* Force Sidebar Toggle Arrow (>>) to be permanent on the LEFT */
     [data-testid="collapsedControl"] {
         display: flex !important;
         visibility: visible !important;
         z-index: 999999 !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 15px !important;
+        background-color: #2d3748 !important; /* Dark box so it's visible */
+        color: white !important; /* White arrow icon */
+        border-radius: 0 8px 8px 0 !important;
+        padding: 5px 10px !important;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.2) !important;
     }
 
-    /* Pull the main content up to the very top */
-    .main .block-container { padding-top: 1.5rem !important; }
-
-    /* Clean Auth UI - No Boxes, No Stickers */
-    .auth-container {
-        max-width: 400px;
-        margin: auto;
-        margin-top: -10px; 
+    /* Target the SVG arrow inside the toggle specifically */
+    [data-testid="collapsedControl"] svg {
+        fill: white !important;
+        color: white !important;
     }
 
-    .brand-title {
-        font-weight: 700;
-        font-size: 32px;
-        color: #1a202c;
-        text-align: center;
-        margin-bottom: 0px; 
-    }
+    /* Fix for Metrics visibility */
+    [data-testid="stMetricLabel"] > div { color: #4a5568 !important; }
+    [data-testid="stMetricValue"] > div { color: #1a202c !important; font-weight: 700 !important; }
 
-    .brand-subtitle {
-        font-size: 15px;
-        color: #718096;
-        text-align: center;
-        margin-bottom: 15px; 
-    }
+    /* Pull the main content up */
+    .main .block-container { padding-top: 2rem !important; }
 
-    /* Form UI Refinement - Clean & Flat */
+    /* Clean Auth UI */
+    .auth-container { max-width: 400px; margin: auto; margin-top: -10px; }
+    .brand-title { font-weight: 700; font-size: 32px; color: #1a202c !important; text-align: center; }
+    .brand-subtitle { font-size: 15px; color: #718096 !important; text-align: center; }
+
+    /* Forms and Tabs */
     [data-testid="stForm"] { border: none !important; padding: 0 !important; }
     .stTabs [data-baseweb="tab-list"] { gap: 20px; justify-content: center; border-bottom: none; }
     
-    /* Input & Button Styling */
-    .stButton>button { border-radius: 8px; font-weight: 600; height: 3em; border: none; background-color: #2d3748; color: white; }
-    .stTextInput input { border-radius: 8px !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; }
+    /* Button Styling */
+    .stButton>button { 
+        border-radius: 8px; 
+        font-weight: 600; 
+        height: 3em; 
+        border: none; 
+        background-color: #2d3748 !important; 
+        color: white !important; 
+    }
     
-    /* Hide default Streamlit elements */
+    .stTextInput input { border-radius: 8px !important; background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; color: black !important; }
+    
     header {visibility: hidden;}
     footer {visibility: hidden;}
     </style>
@@ -85,7 +100,7 @@ if 'user_id' not in st.session_state:
 
 session = get_session()
 
-# --- 5. AUTHENTICATION INTERFACE (Pure Text) ---
+# --- 5. AUTHENTICATION INTERFACE ---
 def auth_ui():
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
@@ -130,7 +145,7 @@ def auth_ui():
 # --- 6. MAIN DASHBOARD INTERFACE ---
 def dashboard_ui():
     with st.sidebar:
-        st.markdown("<h2 style='text-align: center;'>FinanceFlow</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='text-align: center; color: #1a1c23;'>FinanceFlow</h2>", unsafe_allow_html=True)
         
         # ACCOUNT DROPDOWN (No icon in label)
         with st.expander(f"Account ({st.session_state['username']})", expanded=False):
@@ -173,7 +188,6 @@ def dashboard_ui():
         m3.metric("Balance", f"${inc-exp:,.2f}")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        # Tabs with text only
         tab_charts, tab_data = st.tabs(["Analytics", "History"])
         with tab_charts:
             col_l, col_r = st.columns(2)
@@ -187,7 +201,6 @@ def dashboard_ui():
         with tab_data:
             st.dataframe(df.sort_values(by="Date", ascending=False), use_container_width=True)
             csv = df.to_csv(index=False).encode('utf-8')
-            # Button with text only
             st.download_button(label="Download CSV", data=csv, file_name='finance_history.csv', mime='text/csv', use_container_width=True)
     else:
         st.info("Welcome! Use the sidebar to add a record.")
